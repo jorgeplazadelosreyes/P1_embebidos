@@ -1,7 +1,7 @@
 from machine import Pin
 import utime
 
-class LoadMessure:
+class LoadCell:
     def __init__(self, dt_pin_num, sck_pin_num, calibration_factor=1):
         self.dt_pin = Pin(dt_pin_num, Pin.IN)
         self.scl_pin = Pin(sck_pin_num, Pin.OUT)
