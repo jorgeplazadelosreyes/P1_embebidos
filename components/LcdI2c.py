@@ -1,8 +1,8 @@
 import utime
 import gc
 
-from lcdApi import LcdApi
-from machine import I2C
+from components.lcdApi import LcdApi
+from machine import SoftI2C, Pin
 
 # PCF8574 pin definitions
 MASK_RS = 0x01       # P0
@@ -12,12 +12,16 @@ MASK_E  = 0x04       # P2
 SHIFT_BACKLIGHT = 3  # P3
 SHIFT_DATA      = 4  # P4-P7
 
+I2C_ADDR  =  0x27
+I2C_NUM_ROWS = 2
+I2C_NUM_COLS = 16
+
 class LcdI2c(LcdApi):
     
     #Implements a HD44780 character LCD connected via PCF8574 on I2C
 
-    def _init_(self, i2c, i2c_addr, num_lines, num_columns):
-        self.i2c = i2c
+    def __init__(self, sda_pin_numb, scl_pin_numb, i2c_addr=I2C_ADDR, num_lines=I2C_NUM_ROWS, num_columns=I2C_NUM_COLS):
+        self.i2c = SoftI2C(sda=Pin(sda_pin_numb), scl=Pin(scl_pin_numb), freq=100000)
         self.i2c_addr = i2c_addr
         self.i2c.writeto(self.i2c_addr, bytes([0]))
         utime.sleep_ms(20)   # Allow LCD time to powerup
@@ -31,7 +35,7 @@ class LcdI2c(LcdApi):
         # Put LCD into 4-bit mode
         self.hal_write_init_nibble(self.LCD_FUNCTION)
         utime.sleep_ms(1)
-        LcdApi._init_(self, num_lines, num_columns)
+        LcdApi.__init__(self, num_lines, num_columns)
         cmd = self.LCD_FUNCTION
         if num_lines > 1:
             cmd |= self.LCD_FUNCTION_2LINES

@@ -47,7 +47,7 @@ class LcdApi:
     LCD_RW_WRITE = 0
     LCD_RW_READ = 1
 
-    def _init_(self, num_lines, num_columns):
+    def __init__(self, num_lines, num_columns):
         self.num_lines = num_lines
         if self.num_lines > 4:
             self.num_lines = 4
@@ -154,10 +154,11 @@ class LcdApi:
             self.cursor_y = 0
         self.move_to(self.cursor_x, self.cursor_y)
 
-    def putstr(self, string):
+    def putstr(self, str):
         """Write the indicated string to the LCD at the current cursor
         position and advances the cursor position appropriately.
         """
+        string = f"{str}"
         for char in string:
             self.putchar(char)
 
