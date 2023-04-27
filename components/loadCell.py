@@ -6,7 +6,7 @@ class LoadMessure:
         self.dt_pin = Pin(dt_pin_num, Pin.IN)
         self.scl_pin = Pin(sck_pin_num, Pin.OUT)
 
-    def read_value(self):
+    def get_value(self):
         while self.dt_pin.value() == 1:
             pass
 
