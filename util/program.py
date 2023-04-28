@@ -11,5 +11,4 @@ class Program:
         self.dispenser = Dispenser()
 
     def run(self):
-        self.dispenser.add_events()
         pass

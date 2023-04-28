@@ -62,20 +62,18 @@ class Dispenser:
             pin_number=self.GREEN_LED_PIN_NUMBER
         )
         self.button_option = Button(
-            pin_number=self.BUTTON_OPTION_PIN_NUMBER
+            pin_number=self.BUTTON_OPTION_PIN_NUMBER,
+            handler_function=self.change_option
         )
 
         self.timer = Timer(0)
 
         self.lcd.new_print(f"{self.get_dried_fruit().name}")
         
-
-
     def get_dried_fruit(self):
         return self.dried_fruits[self.selected_option]
     
     def change_option(self):
-
         self.selected_option = (self.selected_option + 1) % len(self.dried_fruits)
         selected = self.get_dried_fruit()
         self.lcd.new_print(f"{selected.name}")
@@ -91,14 +89,3 @@ class Dispenser:
         self.open_gate()
         sleep(self.get_dried_fruit().time)
         self.close_gate()
-
-    def debounce(self, timer):
-        if self.button_option.get_value() == 0:
-            self.change_option()
-
-    def button_pressed(self, pin):
-        self.timer.deinit()
-        self.timer.init(mode=Timer.ONE_SHOT, period=self.DEBOUNCE_TIME, callback=self.debounce)
-
-    def add_events(self):
-        self.button_option.add_event(handler=self.button_pressed, trigger=Pin.IRQ_FALLING | Pin.IRQ_RISING)

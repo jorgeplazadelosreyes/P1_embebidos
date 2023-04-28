@@ -7,8 +7,8 @@ class Button:
     def __init__(self, pin_number, handler_function=None):
         self.pin = Pin(pin_number, Pin.IN)
         self.timer = Timer(0)
-        self.handlerFunction = handler_function
-
+        self.handler_function = handler_function
+        self.add_event()
 
     def get_value(self):
         return self.pin.value()
@@ -19,7 +19,7 @@ class Button:
     def add_event():
         pass
 
-    def add_event(self, handler, trigger=Pin.IRQ_FALLING):
+    def add_event(self, trigger=Pin.IRQ_FALLING):
         self.pin.irq(handler=self.button_pressed, trigger=trigger)
     
     def debounce(self, timer):
