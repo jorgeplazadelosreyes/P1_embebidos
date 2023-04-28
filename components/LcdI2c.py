@@ -88,3 +88,13 @@ class LcdI2c(LcdApi):
         self.i2c.writeto(self.i2c_addr, bytes([byte | MASK_E]))
         self.i2c.writeto(self.i2c_addr, bytes([byte]))
         gc.collect()
+
+    def print(self, string, wait=0, clear=False):
+        self.putstr(string)
+        utime.sleep(wait)
+        if clear:
+            self.clear()
+
+    def new_print(self, string):
+        self.clear()
+        self.putstr(string)

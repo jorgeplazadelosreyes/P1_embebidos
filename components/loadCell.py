@@ -2,9 +2,10 @@ from machine import Pin
 import utime
 
 class LoadCell:
-    def __init__(self, dt_pin_num, sck_pin_num, calibration_factor=1):
-        self.dt_pin = Pin(dt_pin_num, Pin.IN)
-        self.scl_pin = Pin(sck_pin_num, Pin.OUT)
+    def __init__(self, dt_pin_numb, sck_pin_numb, calibration_factor=1):
+        self.dt_pin = Pin(dt_pin_numb, Pin.IN)
+        self.scl_pin = Pin(sck_pin_numb, Pin.OUT)
+        self.calibration_factor = calibration_factor
 
     def get_value(self):
         while self.dt_pin.value() == 1:
