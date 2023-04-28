@@ -4,11 +4,10 @@ from machine import Pin, Timer
 class Button:
     DEBOUNCE_TIME = 50
 
-    def __init__(self, name, pin_number, handler_function=None, infra_red=False):
+    def __init__(self, pin_number, handler_function=None, infra_red=False):
         self.pin = Pin(pin_number, Pin.IN)
         self.timer = Timer(0)
         self.handler_function = handler_function
-        self.name = name
         self.infra_red = infra_red
 
         self.add_event()

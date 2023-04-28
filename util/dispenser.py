@@ -27,7 +27,8 @@ class Dispenser:
     LCD_SCL_PIN_NUMBER = 5
     LOAD_CELL_DT_PIN_NUMBER = 33
     LOAD_CELL_SCK_PIN_NUMBER = 32
-    INFRA_RED_PIN_NUMBER = 23
+    INFRA_RED_CUP_PIN_NUMBER = 23
+    INFRA_RED_LOAD_PIN_NUMBER = 25
     RED_LED_PIN_NUMBER = 26
     GREEN_LED_PIN_NUMBER = 15
     BUTTON_OPTION_PIN_NUMBER = 19
@@ -52,25 +53,27 @@ class Dispenser:
             dt_pin_numb=self.LOAD_CELL_DT_PIN_NUMBER,
             sck_pin_numb=self.LOAD_CELL_SCK_PIN_NUMBER
         )
-        self.infra_red = InfraRed(
-            pin_number=self.INFRA_RED_PIN_NUMBER
-        )
         self.red_led = Led(
             pin_number=self.RED_LED_PIN_NUMBER
         )
         self.green_led = Led(
             pin_number=self.GREEN_LED_PIN_NUMBER
         )
+        self.infra_red_cup = InfraRed(
+            pin_number=self.INFRA_RED_CUP_PIN_NUMBER
+        )
+        self.infra_red_load = InfraRed(
+            pin_number=self.INFRA_RED_LOAD_PIN_NUMBER,
+            leds={"red": self.red_led, "green": self.green_led}
+        )
         self.button_option = Button(
-            name = "option",
             pin_number=self.BUTTON_OPTION_PIN_NUMBER,
             handler_function=self.change_option
         )
         self.button_action = Button(
-            name = "action",
             pin_number=self.BUTTON_ACTION_PIN_NUMBER,
             handler_function=self.give_dried_fruit,
-            infra_red= self.infra_red
+            infra_red= self.infra_red_cup
         )
 
         self.lcd.new_print(f"{self.get_dried_fruit().name}")
@@ -95,3 +98,11 @@ class Dispenser:
         self.open_gate()
         sleep(self.get_dried_fruit().time)
         self.close_gate()
+
+    def check20percentage(self):
+        if self.infra_red_load.detect(): # mayor a 20
+            self.green_led.turn_on()
+            self.red_led.turn_off()
+        else: # menor a 20
+            self.green_led.turn_off()
+            self.red_led.turn_off()
