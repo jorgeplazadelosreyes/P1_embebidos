@@ -7,3 +7,6 @@ class InfraRed:
 
     def get_value(self):
         return self.pin.value()
+    
+    def detect(self):
+        return self.get_value() == 1

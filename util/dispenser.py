@@ -18,21 +18,21 @@ class Dispenser:
     ALMOND_AMOUNT = 100
     WALNUT_AMOUNT = 80
 
-    PENAUT_TIME = 1
-    ALMOND_TIME = 1
-    WALNUT_TIME = 1
+    PENAUT_TIME = 0.5
+    ALMOND_TIME = 0.5
+    WALNUT_TIME = 0.5
 
     SERVO_PIN_NUMBER = 14
     LCD_SDA_PIN_NUMBER = 4
     LCD_SCL_PIN_NUMBER = 5
     LOAD_CELL_DT_PIN_NUMBER = 33
     LOAD_CELL_SCK_PIN_NUMBER = 32
-    INFRA_RED_PIN_NUMBER = 25
+    INFRA_RED_PIN_NUMBER = 23
     RED_LED_PIN_NUMBER = 26
     GREEN_LED_PIN_NUMBER = 15
     BUTTON_OPTION_PIN_NUMBER = 19
+    BUTTON_ACTION_PIN_NUMBER = 2
 
-    DEBOUNCE_TIME = 50
 
     def __init__(self):
         self.dried_fruits = [
@@ -62,13 +62,19 @@ class Dispenser:
             pin_number=self.GREEN_LED_PIN_NUMBER
         )
         self.button_option = Button(
+            name = "option",
             pin_number=self.BUTTON_OPTION_PIN_NUMBER,
             handler_function=self.change_option
         )
-
-        self.timer = Timer(0)
+        self.button_action = Button(
+            name = "action",
+            pin_number=self.BUTTON_ACTION_PIN_NUMBER,
+            handler_function=self.give_dried_fruit,
+            infra_red= self.infra_red
+        )
 
         self.lcd.new_print(f"{self.get_dried_fruit().name}")
+        self.servo.move(0)
         
     def get_dried_fruit(self):
         return self.dried_fruits[self.selected_option]
@@ -80,7 +86,7 @@ class Dispenser:
         print(f"Selected: {selected.name}")
 
     def open_gate(self):
-        self.servo.move(180)
+        self.servo.move(90)
 
     def close_gate(self):
         self.servo.move(0)
