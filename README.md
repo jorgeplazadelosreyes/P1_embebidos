@@ -27,18 +27,27 @@ Este proyecto consiste en la creación de una máquina dispensadora de frutos se
 
 ## Esquema de pines del ESP32
 
-Revisar archivo util/dispenser.py
+Revisar archivo [dispenser.py](https://github.com/jorgeplazadelosreyes/P1_embebidos/blob/main/util/dispenser.py)
 
 SERVO: pin 14
+
 PANTALLA LCD:
+
 - pin sda 4
 - pin scl 5
 CELDA DE CARGA:
+
 - pin dt 33
 - pin sck 32
+
 INFRAROJO PARA VASO: pin 23
+
 INFRAROJO PARA CARGA: pin 25
+
 LED ROJO: pin 26
+
 LED VERDE: pin 15
+
 BOTON CAMBIO DE OPCION: pin 19
+
 BOTON ACCIONADOR: pin 2
