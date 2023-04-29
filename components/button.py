@@ -26,7 +26,7 @@ class Button:
     
     def debounce(self, timer):
         if self.infra_red:
-            if self.is_pressed() and not self.infra_red.detect():
+            if self.is_pressed() and self.infra_red.detect():
                 self.handler_function()
         else:
             if self.is_pressed():
