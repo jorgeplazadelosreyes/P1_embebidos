@@ -1,5 +1,3 @@
-from machine import Pin, Timer
-from time import sleep
 from util.program import Program
 
 

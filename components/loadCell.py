@@ -6,6 +6,7 @@ class LoadCell:
         self.dt_pin = Pin(dt_pin_numb, Pin.IN)
         self.scl_pin = Pin(sck_pin_numb, Pin.OUT)
         self.calibration_factor = calibration_factor
+        self.last_value = 0
 
     def get_value(self):
         while self.dt_pin.value() == 1:
@@ -27,3 +28,6 @@ class LoadCell:
         weight = float((data ^ 0x800000) - 0x800000) / self.calibration_factor
 
         return weight
+    
+    def update_last_value(self):
+        self.last_value = self.get_value()
