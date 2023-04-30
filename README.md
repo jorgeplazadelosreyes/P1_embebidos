@@ -51,3 +51,12 @@ LED VERDE: pin 15
 BOTON CAMBIO DE OPCION: pin 19
 
 BOTON ACCIONADOR: pin 2
+
+## Codigo
+
+Nuestro codigo esta modularizado en diferentes carpetas:
+En la carpeta [components](https://github.com/jorgeplazadelosreyes/P1_embebidos/tree/main/components), se encuentran todas las clases que representan componentes fisicos de hardware.
+
+En la carpeta [util](https://github.com/jorgeplazadelosreyes/P1_embebidos/tree/main/util), se encuentra la clase del dispensador que define la logica de este, y la clase program, que define la logica del programa.
+
+En la carpeta [raiz](https://github.com/jorgeplazadelosreyes/P1_embebidos), se encuentra las dos carpetas señaladas aneriormente, junto con el el archivo main y boot
