@@ -1,14 +1,15 @@
 from machine import Pin, Timer
 
-class InfraRed:
 
-    def __init__(self, pin_number, leds=None):
+class InfraRed:
+    DEBOUNCE_TIME = 50
+
+    def __init__(self, pin_number):
         self.pin = Pin(pin_number, Pin.IN)
         self.last_state = self.get_value()
-        self.leds = leds
         self.timer = Timer(0)
+        self.handler_function = None
         
-        self.add_event()
 
     def get_value(self):
         return self.pin.value()
@@ -16,8 +17,8 @@ class InfraRed:
     def detect(self):
         return self.get_value() == 0
     
-
-    def add_event(self, trigger=Pin.IRQ_FALLING):
+    def add_event(self, handler_function, trigger=Pin.IRQ_FALLING):
+        self.handler_function = handler_function
         self.pin.irq(handler=self.state_changed, trigger=trigger)
 
     def state_changed(self, pin):
@@ -25,12 +26,4 @@ class InfraRed:
         self.timer.init(mode=Timer.ONE_SHOT, period=100, callback=self.debounce)
 
     def debounce(self, timer):
-        if self.detect():
-            self.leds["green"].turn_on()
-            self.leds["red"].turn_off()
-        else:
-            self.leds["green"].turn_off()
-            self.leds["red"].turn_on()
-
-
-    
+        self.handler_function()   
