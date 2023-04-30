@@ -55,6 +55,7 @@ BOTON ACCIONADOR: pin 2
 ## Codigo
 
 Nuestro codigo esta modularizado en diferentes carpetas:
+
 En la carpeta [components](https://github.com/jorgeplazadelosreyes/P1_embebidos/tree/main/components), se encuentran todas las clases que representan componentes fisicos de hardware.
 
 En la carpeta [util](https://github.com/jorgeplazadelosreyes/P1_embebidos/tree/main/util), se encuentra la clase del dispensador que define la logica de este, y la clase program, que define la logica del programa.
