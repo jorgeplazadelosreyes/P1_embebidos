@@ -7,21 +7,23 @@ from machine import SoftI2C, Pin
 # PCF8574 pin definitions
 MASK_RS = 0x01       # P0
 MASK_RW = 0x02       # P1
-MASK_E  = 0x04       # P2
+MASK_E = 0x04       # P2
 
 SHIFT_BACKLIGHT = 3  # P3
-SHIFT_DATA      = 4  # P4-P7
+SHIFT_DATA = 4  # P4-P7
 
-I2C_ADDR  =  0x27
+I2C_ADDR = 0x27
 I2C_NUM_ROWS = 2
 I2C_NUM_COLS = 16
 
+
 class LcdI2c(LcdApi):
-    
-    #Implements a HD44780 character LCD connected via PCF8574 on I2C
+
+    # Implements a HD44780 character LCD connected via PCF8574 on I2C
 
     def __init__(self, sda_pin_numb, scl_pin_numb, i2c_addr=I2C_ADDR, num_lines=I2C_NUM_ROWS, num_columns=I2C_NUM_COLS):
-        self.i2c = SoftI2C(sda=Pin(sda_pin_numb), scl=Pin(scl_pin_numb), freq=100000)
+        self.i2c = SoftI2C(sda=Pin(sda_pin_numb),
+                           scl=Pin(scl_pin_numb), freq=100000)
         self.i2c_addr = i2c_addr
         self.i2c.writeto(self.i2c_addr, bytes([0]))
         utime.sleep_ms(20)   # Allow LCD time to powerup
@@ -49,17 +51,17 @@ class LcdI2c(LcdApi):
         self.i2c.writeto(self.i2c_addr, bytes([byte | MASK_E]))
         self.i2c.writeto(self.i2c_addr, bytes([byte]))
         gc.collect()
-        
+
     def hal_backlight_on(self):
         # Allows the hal layer to turn the backlight on
         self.i2c.writeto(self.i2c_addr, bytes([1 << SHIFT_BACKLIGHT]))
         gc.collect()
-        
+
     def hal_backlight_off(self):
-        #Allows the hal layer to turn the backlight off
+        # Allows the hal layer to turn the backlight off
         self.i2c.writeto(self.i2c_addr, bytes([0]))
         gc.collect()
-        
+
     def hal_write_command(self, cmd):
         # Write a command to the LCD. Data is latched on the falling edge of E.
         byte = ((self.backlight << SHIFT_BACKLIGHT) |
@@ -84,7 +86,7 @@ class LcdI2c(LcdApi):
         self.i2c.writeto(self.i2c_addr, bytes([byte]))
         byte = (MASK_RS |
                 (self.backlight << SHIFT_BACKLIGHT) |
-                ((data & 0x0f) << SHIFT_DATA))      
+                ((data & 0x0f) << SHIFT_DATA))
         self.i2c.writeto(self.i2c_addr, bytes([byte | MASK_E]))
         self.i2c.writeto(self.i2c_addr, bytes([byte]))
         gc.collect()

@@ -1,6 +1,7 @@
 from machine import Pin
 import utime
 
+
 class LoadCell:
     def __init__(self, dt_pin_numb, sck_pin_numb, calibration_factors=[2008.8, -58100]):
         self.dt_pin = Pin(dt_pin_numb, Pin.IN)
@@ -24,9 +25,7 @@ class LoadCell:
         self.scl_pin.on()
         self.scl_pin.off()
 
-        weight = (float((data ^ 0x800000) - 0x800000) - self.calibration_factors[1]) / self.calibration_factors[0]
+        weight = (float((data ^ 0x800000) - 0x800000) -
+                    self.calibration_factors[1]) / self.calibration_factors[0]
 
         return weight
-    
-
-

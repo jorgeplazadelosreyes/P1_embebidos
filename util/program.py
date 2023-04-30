@@ -1,5 +1,4 @@
 from util.dispenser import Dispenser
-from machine import Pin
 
 
 class Program:

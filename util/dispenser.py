@@ -4,15 +4,16 @@ from components.lcdI2c import LcdI2c
 from components.servo import Servo
 from components.loadCell import LoadCell
 from components.led import Led
-from time import time, sleep, sleep_ms
-from machine import Pin, Timer
+from time import sleep
 from math import floor
+
 
 class DriedFruit:
     def __init__(self, name, amount, time):
         self.name = name
         self.amount = amount
         self.time = time
+
 
 class Dispenser:
     PENAUT_AMOUNT = 50
@@ -35,14 +36,15 @@ class Dispenser:
     BUTTON_OPTION_PIN_NUMBER = 19
     BUTTON_ACTION_PIN_NUMBER = 2
 
-
     def __init__(self):
         self.dried_fruits = [
-            DriedFruit("peanut", self.PENAUT_AMOUNT, self.PENAUT_TIME),
-            DriedFruit("almond", self.ALMOND_AMOUNT, self.ALMOND_TIME),
-            DriedFruit("walnut", self.WALNUT_AMOUNT, self.WALNUT_TIME),
+            DriedFruit("mani", self.PENAUT_AMOUNT, self.PENAUT_TIME),
+            DriedFruit("almendra", self.ALMOND_AMOUNT, self.ALMOND_TIME),
+            DriedFruit("nuez", self.WALNUT_AMOUNT, self.WALNUT_TIME),
         ]
         self.selected_option = 0
+        self.selected_fruit = self.get_dried_fruit()
+        self.selected_fruit_text = f"{self.selected_fruit.name} {self.selected_fruit.amount}g"
         self.last_weight = 0
         self.servo = Servo(
             pin_number=self.SERVO_PIN_NUMBER
@@ -76,27 +78,18 @@ class Dispenser:
             pin_number=self.BUTTON_ACTION_PIN_NUMBER,
         )
 
-        self.button_option.add_event(handler_function=self.change_option)
-        self.button_action.add_event(handler_function=self.give_dried_fruit)
+        self.initialize_components()
 
-        self.lcd.new_print(f"{self.get_dried_fruit().name}")
-        self.servo.move(0)
-
-        self.infra_red_load.add_event(handler_function=self.check20percentage) 
-
-        
     def get_dried_fruit(self):
-        return self.dried_fruits[self.selected_option]
-    
-    def change_option(self):
-        self.selected_option = (self.selected_option + 1) % len(self.dried_fruits)
-        selected = self.get_dried_fruit()
-        self.load_cell.get_value()
-        string = f"{selected.name} {selected.amount}\n{self.load_cell.get_value()}"
-        print(self.last_weight)
+        self.selected_fruit = self.dried_fruits[self.selected_option]
+        self.selected_fruit_text = f"{self.selected_fruit.name} {self.selected_fruit.amount}g"
+        return self.selected_fruit
 
-        self.lcd.new_print(string)
-        print(string)
+    def change_option(self):
+        self.selected_option = (self.selected_option +
+                                1) % len(self.dried_fruits)
+        self.get_dried_fruit()
+        self.lcd.new_print(self.selected_fruit_text)
 
     def open_gate(self):
         self.servo.move(70)
@@ -105,29 +98,41 @@ class Dispenser:
         self.servo.move(0)
 
     def give_dried_fruit(self):
-        if self.infra_red_cup.detect(): 
+        self.get_dried_fruit()
+        if self.infra_red_cup.detect():
             self.load_cell.get_value()
             self.last_weight = self.load_cell.get_value()
             current_weight = self.load_cell.get_value() - self.last_weight
-            self.lcd.new_print(f"{self.load_cell.get_value():0.1f} - {self.last_weight:0.1f} = \n{abs(current_weight):0.1f}")
-            while current_weight <= 50:
+            self.lcd.new_print(
+                f"{self.load_cell.get_value():0.1f} - {self.last_weight:0.1f} = \n{abs(current_weight):0.1f}")
+            while current_weight <= self.get_dried_fruit().amount:
                 self.open_gate()
                 sleep(self.get_dried_fruit().time)
                 self.close_gate()
                 self.load_cell.get_value()
-                current_weight = floor(self.load_cell.get_value() - self.last_weight)
+                current_weight = floor(
+                    self.load_cell.get_value() - self.last_weight)
                 print(f"pesoooo: {current_weight}")
             self.last_weight = self.load_cell.get_value()
+        else:
+            self.lcd.clear()
+            self.lcd.print("Falta vaso", 3, True)
+            self.lcd.new_print(self.selected_fruit_text)
 
     def check20percentage(self):
         print(self.infra_red_load.detect())
-        if self.infra_red_load.detect(): # mayor a 20
+        if self.infra_red_load.detect():  # mayor a 20
             self.green_led.turn_on()
             self.red_led.turn_off()
-        else: # menor a 20
+        else:  # menor a 20
             self.green_led.turn_off()
             self.red_led.turn_on()
-        
 
-    def holafunction(self):
-        print("hola")
+    def initialize_components(self):
+        self.button_option.add_event(handler_function=self.change_option)
+        self.button_action.add_event(handler_function=self.give_dried_fruit)
+
+        self.infra_red_load.add_event(handler_function=self.check20percentage)
+
+        self.lcd.new_print(self.selected_fruit_text)
+        self.servo.move(0)

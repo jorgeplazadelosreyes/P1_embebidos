@@ -3,8 +3,6 @@ from components.loadCell import LoadCell
 from time import sleep
 
 
-
-
 def main():
     program = Program()
     program.run()

@@ -1,5 +1,6 @@
 from machine import Pin
 
+
 class Led:
     def __init__(self, pin_number):
         self.__led = Pin(pin_number, Pin.OUT)
