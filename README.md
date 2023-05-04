@@ -35,6 +35,7 @@ PANTALLA LCD:
 
 - pin sda 4
 - pin scl 5
+- 
 CELDA DE CARGA:
 
 - pin dt 33
