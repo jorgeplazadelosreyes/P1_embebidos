@@ -53,7 +53,7 @@ BOTON CAMBIO DE OPCION: pin 19
 
 BOTON ACCIONADOR: pin 2
 
-## Codigo
+## Código
 
 Nuestro codigo esta modularizado en diferentes carpetas:
 
