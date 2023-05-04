@@ -9,10 +9,11 @@ from math import floor
 
 
 class DriedFruit:
-    def __init__(self, name, amount, time):
+    def __init__(self, name, amount, time, opening):
         self.name = name
         self.amount = amount
         self.time = time
+        self.opening = opening
 
 
 class Dispenser:
@@ -20,9 +21,15 @@ class Dispenser:
     ALMOND_AMOUNT = 100
     WALNUT_AMOUNT = 80
 
-    PENAUT_TIME = 0.1
-    ALMOND_TIME = 0.1
-    WALNUT_TIME = 0.1
+    PENAUT_TIME = 0.7
+    ALMOND_TIME = 0.7
+    WALNUT_TIME = 0.7
+
+    PENAUT_OPENING = 50
+    ALMOND_OPENING = 80
+    WALNUT_OPENING = 80
+
+    CLOSE_GATE = 0
 
     SERVO_PIN_NUMBER = 14
     LCD_SDA_PIN_NUMBER = 4
@@ -31,20 +38,20 @@ class Dispenser:
     LOAD_CELL_SCK_PIN_NUMBER = 32
     INFRA_RED_CUP_PIN_NUMBER = 23
     INFRA_RED_LOAD_PIN_NUMBER = 25
-    RED_LED_PIN_NUMBER = 26
-    GREEN_LED_PIN_NUMBER = 15
-    BUTTON_OPTION_PIN_NUMBER = 19
-    BUTTON_ACTION_PIN_NUMBER = 2
+    LED_RED_PIN_NUMBER = 26
+    LED_GREEN_PIN_NUMBER = 15
+    BUTTON_OPTION_PIN_NUMBER = 19 # AZUL
+    BUTTON_ACTION_PIN_NUMBER = 2 # VERDE
 
     def __init__(self):
         self.dried_fruits = [
-            DriedFruit("mani", self.PENAUT_AMOUNT, self.PENAUT_TIME),
-            DriedFruit("almendra", self.ALMOND_AMOUNT, self.ALMOND_TIME),
-            DriedFruit("nuez", self.WALNUT_AMOUNT, self.WALNUT_TIME),
+            DriedFruit("mani", self.PENAUT_AMOUNT, self.PENAUT_TIME, self.PENAUT_OPENING),
+            DriedFruit("almendra", self.ALMOND_AMOUNT, self.ALMOND_TIME , self.ALMOND_OPENING),
+            DriedFruit("nuez", self.WALNUT_AMOUNT, self.WALNUT_TIME , self.WALNUT_OPENING),
         ]
         self.selected_option = 0
         self.selected_fruit = self.get_dried_fruit()
-        self.selected_fruit_text = f"{self.selected_fruit.name} {self.selected_fruit.amount}g"
+        self.selected_fruit_text = f"{self.selected_fruit.name} {self.selected_fruit.amount} g"
         self.last_weight = 0
         self.servo = Servo(
             pin_number=self.SERVO_PIN_NUMBER
@@ -58,11 +65,11 @@ class Dispenser:
             sck_pin_numb=self.LOAD_CELL_SCK_PIN_NUMBER,
             calibration_factors=[2311, -49688]
         )
-        self.red_led = Led(
-            pin_number=self.RED_LED_PIN_NUMBER
+        self.led_red = Led(
+            pin_number=self.LED_RED_PIN_NUMBER
         )
-        self.green_led = Led(
-            pin_number=self.GREEN_LED_PIN_NUMBER
+        self.led_green = Led(
+            pin_number=self.LED_GREEN_PIN_NUMBER
         )
         self.infra_red_cup = InfraRed(
             pin_number=self.INFRA_RED_CUP_PIN_NUMBER
@@ -86,26 +93,29 @@ class Dispenser:
         return self.selected_fruit
 
     def change_option(self):
+        print("llamando a change_option")
         self.selected_option = (self.selected_option +
                                 1) % len(self.dried_fruits)
         self.get_dried_fruit()
         self.lcd.new_print(self.selected_fruit_text)
 
     def open_gate(self):
-        self.servo.move(70)
+        self.servo.move(self.selected_fruit.opening)
 
     def close_gate(self):
-        self.servo.move(0)
+        self.servo.move(self.CLOSE_GATE)
 
     def give_dried_fruit(self):
+        print("llamando a give_dried_fruitn")
         self.get_dried_fruit()
         if self.infra_red_cup.detect():
             self.load_cell.get_value()
             self.last_weight = self.load_cell.get_value()
             current_weight = self.load_cell.get_value() - self.last_weight
-            self.lcd.new_print(
-                f"{self.load_cell.get_value():0.1f} - {self.last_weight:0.1f} = \n{abs(current_weight):0.1f}")
+            
             while current_weight <= self.get_dried_fruit().amount:
+                self.lcd.new_print(
+                    f"{self.load_cell.get_value():0.1f} - {self.last_weight:0.1f} = \n{abs(current_weight):0.1f}")
                 self.open_gate()
                 sleep(self.get_dried_fruit().time)
                 self.close_gate()
@@ -113,20 +123,26 @@ class Dispenser:
                 current_weight = floor(
                     self.load_cell.get_value() - self.last_weight)
                 print(f"pesoooo: {current_weight}")
+
+            self.servo.move(0)
             self.last_weight = self.load_cell.get_value()
+            self.lcd.clear()
+            self.lcd.print(f"Vaso rellenado\n{current_weight:0.2f} g", 2, True)
+            self.lcd.new_print(self.selected_fruit_text)
+
         else:
             self.lcd.clear()
-            self.lcd.print("Falta vaso", 3, True)
+            self.lcd.print("Falta vaso", 2, True)
             self.lcd.new_print(self.selected_fruit_text)
 
     def check20percentage(self):
         print(self.infra_red_load.detect())
         if self.infra_red_load.detect():  # mayor a 20
-            self.green_led.turn_on()
-            self.red_led.turn_off()
+            self.led_green.turn_on()
+            self.led_red.turn_off()
         else:  # menor a 20
-            self.green_led.turn_off()
-            self.red_led.turn_on()
+            self.led_green.turn_off()
+            self.led_red.turn_on()
 
     def initialize_components(self):
         self.button_option.add_event(handler_function=self.change_option)
