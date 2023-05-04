@@ -114,20 +114,19 @@ class Dispenser:
             current_weight = self.load_cell.get_value() - self.last_weight
             
             while current_weight <= self.get_dried_fruit().amount:
-                self.lcd.new_print(
-                    f"{self.load_cell.get_value():0.1f} - {self.last_weight:0.1f} = \n{abs(current_weight):0.1f}")
+                self.lcd.new_print(f"Peso actual:\n{current_weight:0.3f} g")
                 self.open_gate()
                 sleep(self.get_dried_fruit().time)
                 self.close_gate()
                 self.load_cell.get_value()
                 current_weight = floor(
                     self.load_cell.get_value() - self.last_weight)
-                print(f"pesoooo: {current_weight}")
+                print(f"Peso actual: {current_weight}")
 
-            self.servo.move(0)
+            self.close_gate()
             self.last_weight = self.load_cell.get_value()
             self.lcd.clear()
-            self.lcd.print(f"Vaso rellenado\n{current_weight:0.2f} g", 2, True)
+            self.lcd.print(f"Vaso rellenado\n{current_weight:0.3f} g", 2, True)
             self.lcd.new_print(self.selected_fruit_text)
 
         else:
