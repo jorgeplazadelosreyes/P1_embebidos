@@ -45,9 +45,9 @@ class Dispenser:
 
     def __init__(self):
         self.dried_fruits = [
-            DriedFruit("mani", self.PENAUT_AMOUNT, self.PENAUT_TIME, self.PENAUT_OPENING),
-            DriedFruit("almendra", self.ALMOND_AMOUNT, self.ALMOND_TIME , self.ALMOND_OPENING),
-            DriedFruit("nuez", self.WALNUT_AMOUNT, self.WALNUT_TIME , self.WALNUT_OPENING),
+            DriedFruit("Mani", self.PENAUT_AMOUNT, self.PENAUT_TIME, self.PENAUT_OPENING),
+            DriedFruit("Almendra", self.ALMOND_AMOUNT, self.ALMOND_TIME , self.ALMOND_OPENING),
+            DriedFruit("Nuez", self.WALNUT_AMOUNT, self.WALNUT_TIME , self.WALNUT_OPENING),
         ]
         self.selected_option = 0
         self.selected_fruit = self.get_dried_fruit()
@@ -89,7 +89,7 @@ class Dispenser:
 
     def get_dried_fruit(self):
         self.selected_fruit = self.dried_fruits[self.selected_option]
-        self.selected_fruit_text = f"{self.selected_fruit.name} {self.selected_fruit.amount}g"
+        self.selected_fruit_text = f"{self.selected_fruit.name} {self.selected_fruit.amount} g"
         return self.selected_fruit
 
     def change_option(self):
@@ -151,3 +151,6 @@ class Dispenser:
 
         self.lcd.new_print(self.selected_fruit_text)
         self.servo.move(0)
+
+        self.led_green.turn_off()
+        self.led_red.turn_on()
